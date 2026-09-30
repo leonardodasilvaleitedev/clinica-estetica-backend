@@ -24,7 +24,7 @@ public record FuncionarioRequestDTO(
         String telefone,
 
         @NotBlank(message = "A senha é obrigatória")
-        String senhaHash,
+        String senha,
 
         @NotBlank(message = "O cargo é obrigatório")
         String cargo,

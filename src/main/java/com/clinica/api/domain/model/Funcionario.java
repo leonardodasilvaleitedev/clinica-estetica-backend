@@ -3,17 +3,22 @@ package com.clinica.api.domain.model;
 import com.clinica.api.domain.enums.Cargo;
 import jakarta.persistence.*;
 import lombok.*;
-import org.hibernate.annotations.CreationTimestamp;
+import org.springframework.security.core.GrantedAuthority;
+import org.springframework.security.core.authority.SimpleGrantedAuthority;
+import org.springframework.security.core.userdetails.UserDetails;
 
 import java.math.BigDecimal;
 import java.time.LocalDateTime;
-import java.util.HashSet;
-import java.util.Set;
+import java.util.Collection;
+import java.util.List;
 
 @Entity
 @Table(name = "funcionarios")
-@Getter @Setter @NoArgsConstructor @AllArgsConstructor @Builder
-public class Funcionario {
+@Data
+@NoArgsConstructor
+@AllArgsConstructor
+@Builder
+public class Funcionario implements UserDetails {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
@@ -25,38 +30,62 @@ public class Funcionario {
     @Column(nullable = false, unique = true, length = 14)
     private String cpf;
 
-    @Column(nullable = false, unique = true, length = 100)
-    private String email;
-
     @Column(length = 20)
     private String telefone;
 
-    @Column(name = "senha_hash", nullable = false)
-    private String senhaHash;
+    @Column(nullable = false, unique = true, length = 100)
+    private String email;
 
-    @Builder.Default
+    @Column(nullable = false, name = "senha_hash")
+    private String senha;
+
     @Enumerated(EnumType.STRING)
-    @Column(nullable = false, length = 50)
-    private Cargo cargo = Cargo.PROFISSIONAL;
-
-    @Builder.Default
-    @Column(name = "percentual_comissao", nullable = false, precision = 5, scale = 2)
-    private BigDecimal percentualComissao = BigDecimal.ZERO;
-
-    @Builder.Default
     @Column(nullable = false)
-    private Boolean ativo = true;
+    private Cargo cargo;
 
-    @CreationTimestamp
-    @Column(name = "criado_em", updatable = false)
+    @Column(name = "percentual_comissao", nullable = false, precision = 5, scale = 2)
+    private BigDecimal percentualComissao;
+
+    @Column(nullable = false)
+    private Boolean ativo;
+
+    @Column(name = "criado_em", insertable = false, updatable = false)
     private LocalDateTime criadoEm;
 
-    @Builder.Default
-    @ManyToMany
-    @JoinTable(
-            name = "funcionario_servico",
-            joinColumns = @JoinColumn(name = "funcionario_id"),
-            inverseJoinColumns = @JoinColumn(name = "servico_id")
-    )
-    private Set<Servico> servicos = new HashSet<>();
+    // --- Métodos da interface UserDetails do Spring Security ---
+
+    @Override
+    public Collection<? extends GrantedAuthority> getAuthorities() {
+        return List.of(new SimpleGrantedAuthority("ROLE_" + cargo.name()));
+    }
+
+    @Override
+    public String getPassword() {
+        return this.senha;
+    }
+
+    @Override
+    public String getUsername() {
+        return this.email;
+    }
+
+    @Override
+    public boolean isAccountNonExpired() {
+        return true;
+    }
+
+    @Override
+    public boolean isAccountNonLocked() {
+        return true;
+    }
+
+    @Override
+    public boolean isCredentialsNonExpired() {
+        return true;
+    }
+
+    @Override
+    public boolean isEnabled() {
+        return Boolean.TRUE.equals(this.ativo);
+    }
 }
