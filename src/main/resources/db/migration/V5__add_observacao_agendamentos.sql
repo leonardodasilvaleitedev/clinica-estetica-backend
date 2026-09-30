@@ -1,0 +1,1 @@
+ALTER TABLE agendamentos ADD COLUMN observacao VARCHAR(255);
