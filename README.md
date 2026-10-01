@@ -1,44 +1,55 @@
-# 💅 ERP & CRM - Gestão para Clínicas de Estética
+💅 ERP & CRM - Gestão para Clínicas de Estética
+Sistema robusto para gerenciamento operacional, financeiro e relacionamento com clientes focado no segmento de estética e bem-estar, construído com Java 21, Spring Boot e Spring Security (JWT).
 
-> Sistema completo para gerenciamento operacional, financeiro e relacionamento com clientes focado no segmento de estética e bem-estar.
+🎯 Sobre o Projeto
+O objetivo deste projeto é resolver dores reais de gestão em clínicas de estética, combinando funcionalidades de ERP (controle operacional, estoque e financeiro) e CRM (fidelização, histórico de procedimentos e acompanhamento).
 
----
+🚀 Funcionalidades Principais
+🔒 Autenticação & Segurança (Stateless):
 
-## 🎯 Sobre o Projeto
+Autenticação JWT (JSON Web Token) com encriptação de senhas via BCrypt.
 
-O objetivo deste projeto é resolver dores reais de gestão em clínicas de estética, combinando funcionalidades de **ERP** (controle operacional e financeiro) e **CRM** (fidelização, histórico de procedimentos e ficha de anamnese).
+Proteção de rotas granulares e sessão stateless via Spring Security.
 
-### 🚀 Principais Funcionalidades
+📦 Módulo de Estoque e Suprimentos:
 
-- **Módulo CRM (Gestão de Clientes):**
-  - Ficha de Anamnese digital e histórico de procedimentos realizados.
-  - Registro de preferências, fotos de acompanhamento (antes/depois) e alergias.
-  - Funil de atendimento e acompanhamento pós-procedimento.
+Gestão de insumos com parâmetro de estoque mínimo para reposição.
 
-- **Módulo ERP (Gestão Operacional):**
-  - **Agendamento Inteligente:** Controle de horários por profissional e sala/equipamento.
-  - **Estoque & Suprimentos:** Baixa automática de insumos (ex: aplicação de toxina botulínica/preenchedores).
-  - **Módulo Financeiro:** Fluxo de caixa, comissionamento de profissionais e controle de pacotes/sessões.
+Baixa Automática: Registro de consumo de insumos por profissional/procedimento com dedução automática em lote/saldo.
 
----
+Validação transacional de saldo disponível em estoque para prevenir inconsistências.
 
-## 🛠️ Tecnologias Utilizadas
+👤 Módulo CRM & Clientes (Em expansão):
 
-- **Backend:** Java 21 / Spring Boot (Spring Data JPA, Spring Security, Validation)
-- **Banco de Dados:** MySQL / H2
-- **Documentação da API:** Swagger / OpenAPI
-- **Gerenciamento de Dependências:** Maven
+Ficha de Anamnese digital e histórico de procedimentos realizados.
 
----
+Registro de preferências, fotos de acompanhamento (antes/depois) e restrições/alergias.
 
-## 🏗️ Arquitetura e Modelagem
+📅 Módulo ERP Operacional (Em expansão):
 
-O sistema foi desenhado seguindo as boas práticas do DDD (Domain-Driven Design) e arquitetura em camadas (Controller, Service, Repository, DTOs).
+Agendamento de horários por profissional e sala/equipamento.
 
-```text
-src/main/java/com/clinica/estetica/
-├── controller/    # Endpoints REST
-├── dto/           # Data Transfer Objects
-├── model/         # Entidades de Domínio (Cliente, Agendamento, Anamnese, Estoque)
-├── repository/    # Interfaces Spring Data JPA
-└── service/       # Regras de Negócio e Validações
+Gestão de funcionários e comissionamento.
+
+🛠️ Tecnologias Utilizadas
+Linguagem & Framework: Java 21 | Spring Boot 4.x
+
+Segurança: Spring Security | JWT (io.jsonwebtoken) | BCrypt
+
+Banco de Dados & Persistência: MySQL | Spring Data JPA / Hibernate
+
+Migrações de Banco: Flyway Migration (db/migration)
+
+Documentação & Ferramentas: Maven | Lombok / Java Records | Postman
+
+🏗️️ Arquitetura e Estrutura de Pastas
+O sistema segue a arquitetura em camadas bem definida, fazendo uso de Java Records para a camada de DTOs e Domain Model desacoplado:
+
+
+src/main/java/com/clinica/api/
+├── controller/         # Endpoints REST (InsumoController, AutenticacaoController, etc.)
+├── dto/                # Data Transfer Objects (Records de entrada e saída)
+├── domain/
+│   └── model/          # Entidades JPA (Insumo, UsoInsumo, Funcionario, etc.)
+├── repository/         # Interfaces Spring Data JPA
+└── service/            # Regras de negócio, transações e validações de estoque
