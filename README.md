@@ -1,51 +1,49 @@
-💅 ERP & CRM - Gestão para Clínicas de Estética
-Sistema robusto para gerenciamento operacional, financeiro e relacionamento com clientes focado no segmento de estética e bem-estar, construído com Java 21, Spring Boot e Spring Security (JWT).
+# 💅 ERP & CRM - Gestão para Clínicas de Estética
 
-🎯 Sobre o Projeto
-O objetivo deste projeto é resolver dores reais de gestão em clínicas de estética, combinando funcionalidades de ERP (controle operacional, estoque e financeiro) e CRM (fidelização, histórico de procedimentos e acompanhamento).
+> Sistema robusto para gerenciamento operacional, financeiro e relacionamento com clientes focado no segmento de estética e bem-estar, construído com Java 21, Spring Boot e Spring Security (JWT).
 
-🚀 Funcionalidades Principais
-🔒 Autenticação & Segurança (Stateless):
+---
 
-Autenticação JWT (JSON Web Token) com encriptação de senhas via BCrypt.
+## 🎯 Sobre o Projeto
 
-Proteção de rotas granulares e sessão stateless via Spring Security.
+O objetivo deste projeto é resolver dores reais de gestão em clínicas de estética, combinando funcionalidades de **ERP** (controle operacional, estoque e financeiro) e **CRM** (fidelização, histórico de procedimentos e acompanhamento).
 
-📦 Módulo de Estoque e Suprimentos:
+### 🚀 Funcionalidades Principais
 
-Gestão de insumos com parâmetro de estoque mínimo para reposição.
+- **🔒 Autenticação & Segurança (Stateless):**
+  - Autenticação JWT (`JSON Web Token`) com encriptação de senhas via `BCrypt`.
+  - Proteção de rotas granulares e sessão stateless via `Spring Security`.
 
-Baixa Automática: Registro de consumo de insumos por profissional/procedimento com dedução automática em lote/saldo.
+- **📦 Módulo de Estoque e Suprimentos:**
+  - Gestão de insumos com parâmetro de estoque mínimo para reposição.
+  - **Baixa Automática:** Registro de consumo de insumos por profissional/procedimento com dedução automática no saldo total.
+  - Validação transacional de saldo disponível em estoque para prevenir inconsistências.
 
-Validação transacional de saldo disponível em estoque para prevenir inconsistências.
+- **👤 Módulo CRM & Clientes (Em expansão):**
+  - Ficha de Anamnese digital e histórico de procedimentos realizados.
+  - Registro de preferências, fotos de acompanhamento (antes/depois) e restrições/alergias.
 
-👤 Módulo CRM & Clientes (Em expansão):
+- **📅 Módulo ERP Operacional (Em expansão):**
+  - Agendamento de horários por profissional e sala/equipamento.
+  - Gestão de funcionários e comissionamento.
 
-Ficha de Anamnese digital e histórico de procedimentos realizados.
+---
 
-Registro de preferências, fotos de acompanhamento (antes/depois) e restrições/alergias.
+## 🛠️ Tecnologias Utilizadas
 
-📅 Módulo ERP Operacional (Em expansão):
+- **Linguagem & Framework:** Java 21 | Spring Boot 4.x
+- **Segurança:** Spring Security | JWT (io.jsonwebtoken) | BCrypt
+- **Banco de Dados & Persistência:** MySQL | Spring Data JPA / Hibernate
+- **Migrações de Banco:** Flyway Migration (`db/migration`)
+- **Documentação & Ferramentas:** Maven | Java Records | Postman | Git
 
-Agendamento de horários por profissional e sala/equipamento.
+---
 
-Gestão de funcionários e comissionamento.
+## 🏗️ Arquitetura e Estrutura de Pastas
 
-🛠️ Tecnologias Utilizadas
-Linguagem & Framework: Java 21 | Spring Boot 4.x
+O sistema segue a arquitetura em camadas bem definida, fazendo uso de **Java Records** para DTOs e modelo de domínio desacoplado:
 
-Segurança: Spring Security | JWT (io.jsonwebtoken) | BCrypt
-
-Banco de Dados & Persistência: MySQL | Spring Data JPA / Hibernate
-
-Migrações de Banco: Flyway Migration (db/migration)
-
-Documentação & Ferramentas: Maven | Lombok / Java Records | Postman
-
-🏗️️ Arquitetura e Estrutura de Pastas
-O sistema segue a arquitetura em camadas bem definida, fazendo uso de Java Records para a camada de DTOs e Domain Model desacoplado:
-
-
+```text
 src/main/java/com/clinica/api/
 ├── controller/         # Endpoints REST (InsumoController, AutenticacaoController, etc.)
 ├── dto/                # Data Transfer Objects (Records de entrada e saída)
