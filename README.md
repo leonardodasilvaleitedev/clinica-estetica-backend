@@ -51,3 +51,7 @@ src/main/java/com/clinica/api/
 │   └── model/          # Entidades JPA (Insumo, UsoInsumo, Funcionario, etc.)
 ├── repository/         # Interfaces Spring Data JPA
 └── service/            # Regras de negócio, transações e validações de estoque
+```
+
+✒️ Autor
+Desenvolvido por Leonardo - Desenvolvedor Backend Java / Spring Boot.
