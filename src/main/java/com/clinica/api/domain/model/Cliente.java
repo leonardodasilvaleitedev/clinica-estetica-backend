@@ -1,17 +1,13 @@
-package com.clinica.api.domain.model; // Pacote alinhado com o restante do projeto
+package com.clinica.api.domain.model;
 
 import jakarta.persistence.*;
 import lombok.*;
-import org.hibernate.annotations.CreationTimestamp;
-
 import java.time.LocalDate;
-import java.time.LocalDateTime;
 
 @Entity
 @Table(name = "clientes")
 @Getter
 @Setter
-@NoArgsConstructor
 @AllArgsConstructor
 @Builder
 public class Cliente {
@@ -20,24 +16,55 @@ public class Cliente {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
-    @Column(nullable = false, length = 100)
+    @Column(nullable = false)
     private String nome;
 
-    @Column(unique = true, length = 14)
+    @Column(nullable = false, unique = true)
     private String cpf;
 
-    @Column(nullable = false, length = 20)
-    private String telefone;
-
-    @Column(length = 100)
     private String email;
 
-    private String sexo; // Adicionado para corresponder à migration V3
+    @Column(nullable = false)
+    private String telefone;
 
     @Column(name = "data_nascimento")
     private LocalDate dataNascimento;
 
-    @CreationTimestamp
-    @Column(name = "criado_em", updatable = false)
-    private LocalDateTime criadoEm;
+    private String sexo;
+
+    @Column(name = "observacoes_medicas")
+    private String observacoesMedicas;
+
+    @Column(nullable = false)
+    private Boolean ativo = true;
+
+    public Cliente() {}
+
+    // Getters e Setters
+    public Long getId() { return id; }
+    public void setId(Long id) { this.id = id; }
+
+    public String getNome() { return nome; }
+    public void setNome(String nome) { this.nome = nome; }
+
+    public String getCpf() { return cpf; }
+    public void setCpf(String cpf) { this.cpf = cpf; }
+
+    public String getEmail() { return email; }
+    public void setEmail(String email) { this.email = email; }
+
+    public String getTelefone() { return telefone; }
+    public void setTelefone(String telefone) { this.telefone = telefone; }
+
+    public LocalDate getDataNascimento() { return dataNascimento; }
+    public void setDataNascimento(LocalDate dataNascimento) { this.dataNascimento = dataNascimento; }
+
+    public String getSexo() { return sexo; }
+    public void setSexo(String sexo) { this.sexo = sexo; }
+
+    public String getObservacoesMedicas() { return observacoesMedicas; }
+    public void setObservacoesMedicas(String observacoesMedicas) { this.observacoesMedicas = observacoesMedicas; }
+
+    public Boolean getAtivo() { return ativo; }
+    public void setAtivo(Boolean ativo) { this.ativo = ativo; }
 }

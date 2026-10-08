@@ -2,28 +2,30 @@ package com.clinica.api.dto.cliente;
 
 import com.clinica.api.domain.model.Cliente;
 import java.time.LocalDate;
-import java.time.LocalDateTime;
 
-public record ClienteResponse(
+public record ClienteResponseDTO(
         Long id,
         String nome,
         String cpf,
-        String telefone,
         String email,
-        String sexo,
+        String telefone,
         LocalDate dataNascimento,
-        LocalDateTime criadoEm
+        String sexo,
+        String observacoesMedicas,
+        Boolean ativo
 ) {
-    public ClienteResponse(Cliente cliente) {
+    // Construtor auxiliar para mapear diretamente da Entidade
+    public ClienteResponseDTO(Cliente cliente) {
         this(
                 cliente.getId(),
                 cliente.getNome(),
                 cliente.getCpf(),
-                cliente.getTelefone(),
                 cliente.getEmail(),
-                cliente.getSexo(),
+                cliente.getTelefone(),
                 cliente.getDataNascimento(),
-                cliente.getCriadoEm()
+                cliente.getSexo(),
+                cliente.getObservacoesMedicas(),
+                cliente.getAtivo()
         );
     }
 }

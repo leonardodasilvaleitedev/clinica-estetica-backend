@@ -12,10 +12,14 @@ public record ClienteRequest(
         @Pattern(regexp = "\\d{11}", message = "CPF deve conter 11 dígitos")
         String cpf,
 
+        String email,
+
         @NotBlank(message = "O telefone é obrigatório")
         String telefone,
 
-        String email,
+        LocalDate dataNascimento,
+
         String sexo,
-        LocalDate dataNascimento
+
+        String observacoesMedicas // <--- Adicionado para suportar observações médicas
 ) {}
