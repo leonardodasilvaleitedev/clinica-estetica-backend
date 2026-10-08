@@ -1,16 +1,13 @@
 package com.clinica.api.controller;
 
 import com.clinica.api.dto.cliente.ClienteRequest;
-import com.clinica.api.dto.cliente.ClienteResponse;
-import com.clinica.api.domain.model.Cliente;
-import com.clinica.api.repository.ClienteRepository;
+import com.clinica.api.dto.cliente.ClienteResponseDTO;
+import com.clinica.api.service.ClienteService;
 import jakarta.validation.Valid;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.web.PageableDefault;
 import org.springframework.http.ResponseEntity;
-import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.util.UriComponentsBuilder;
 
@@ -18,37 +15,35 @@ import org.springframework.web.util.UriComponentsBuilder;
 @RequestMapping("/api/clientes")
 public class ClienteController {
 
-    @Autowired
-    private ClienteRepository clienteRepository;
+    private final ClienteService clienteService;
+
+    // Injeção de dependência via construtor (Boa prática do Spring)
+    public ClienteController(ClienteService clienteService) {
+        this.clienteService = clienteService;
+    }
 
     @PostMapping
-    @Transactional
-    public ResponseEntity<ClienteResponse> cadastrar(
+    public ResponseEntity<ClienteResponseDTO> cadastrar(
             @RequestBody @Valid ClienteRequest dados,
             UriComponentsBuilder uriBuilder) {
 
-        var cliente = Cliente.builder()
-                .nome(dados.nome())
-                .cpf(dados.cpf())
-                .telefone(dados.telefone())
-                .email(dados.email())
-                .sexo(dados.sexo())
-                .dataNascimento(dados.dataNascimento())
-                .build();
+        var dto = clienteService.cadastrar(dados);
+        var uri = uriBuilder.path("/api/clientes/{id}").buildAndExpand(dto.id()).toUri();
 
-            clienteRepository.save(cliente);
-
-        var uri = uriBuilder.path("/clientes/{id}").buildAndExpand(cliente.getId()).toUri();
-        return ResponseEntity.created(uri).body(new ClienteResponse(cliente));
+        return ResponseEntity.created(uri).body(dto);
     }
 
     @GetMapping
-    public ResponseEntity<Page<ClienteResponse>> listar(
+    public ResponseEntity<Page<ClienteResponseDTO>> listar(
             @PageableDefault(size = 10, sort = {"nome"}) Pageable paginacao) {
 
-        var pagina = clienteRepository.findAll(paginacao)
-                .map(ClienteResponse::new);
-
+        var pagina = clienteService.listar(paginacao);
         return ResponseEntity.ok(pagina);
+    }
+
+    @GetMapping("/{id}")
+    public ResponseEntity<ClienteResponseDTO> buscarPorId(@PathVariable Long id) {
+        var cliente = clienteService.buscarPorId(id);
+        return ResponseEntity.ok(cliente);
     }
 }
