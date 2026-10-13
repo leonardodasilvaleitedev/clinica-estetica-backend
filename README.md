@@ -1,57 +1,56 @@
-# 💅 ERP & CRM - Gestão para Clínicas de Estética
+# 💅 Clínica de Estética - API RESTful
 
-> Sistema robusto para gerenciamento operacional, financeiro e relacionamento com clientes focado no segmento de estética e bem-estar, construído com Java 21, Spring Boot e Spring Security (JWT).
-
----
-
-## 🎯 Sobre o Projeto
-
-O objetivo deste projeto é resolver dores reais de gestão em clínicas de estética, combinando funcionalidades de **ERP** (controle operacional, estoque e financeiro) e **CRM** (fidelização, histórico de procedimentos e acompanhamento).
-
-### 🚀 Funcionalidades Principais
-
-- **🔒 Autenticação & Segurança (Stateless):**
-  - Autenticação JWT (`JSON Web Token`) com encriptação de senhas via `BCrypt`.
-  - Proteção de rotas granulares e sessão stateless via `Spring Security`.
-
-- **📦 Módulo de Estoque e Suprimentos:**
-  - Gestão de insumos com parâmetro de estoque mínimo para reposição.
-  - **Baixa Automática:** Registro de consumo de insumos por profissional/procedimento com dedução automática no saldo total.
-  - Validação transacional de saldo disponível em estoque para prevenir inconsistências.
-
-- **👤 Módulo CRM & Clientes (Em expansão):**
-  - Ficha de Anamnese digital e histórico de procedimentos realizados.
-  - Registro de preferências, fotos de acompanhamento (antes/depois) e restrições/alergias.
-
-- **📅 Módulo ERP Operacional (Em expansão):**
-  - Agendamento de horários por profissional e sala/equipamento.
-  - Gestão de funcionários e comissionamento.
+API Backend robusta desenvolvida para a gestão completa de uma clínica de estética, cobrindo o gerenciamento de clientes, controle de estoque de produtos e agendamento de serviços.
 
 ---
 
-## 🛠️ Tecnologias Utilizadas
+## 🚀 Tecnologias Utilizadas
 
-- **Linguagem & Framework:** Java 21 | Spring Boot 4.x
-- **Segurança:** Spring Security | JWT (io.jsonwebtoken) | BCrypt
-- **Banco de Dados & Persistência:** MySQL | Spring Data JPA / Hibernate
-- **Migrações de Banco:** Flyway Migration (`db/migration`)
-- **Documentação & Ferramentas:** Maven | Java Records | Postman | Git
+* **Java 21**
+* **Spring Boot 3** (Spring Data JPA, Spring Web, Bean Validation)
+* **MySQL 8** (Banco de dados relacional)
+* **Flyway** (Versionamento e migrações do banco de dados)
+* **Lombok** (Produtividade e redução de código boilerplate)
+* **Maven** (Gerenciamento de dependências e build)
 
 ---
 
-## 🏗️ Arquitetura e Estrutura de Pastas
+## 📌 Módulos e Funcionalidades
 
-O sistema segue a arquitetura em camadas bem definida, fazendo uso de **Java Records** para DTOs e modelo de domínio desacoplado:
+### 👤 1. Gestão de Clientes (`/api/clientes`)
+- Cadastro de clientes com validações de dados obrigatórios.
+- Listagem e busca por ID.
+- Registro de observações médicas e histórico do cliente.
 
-```text
-src/main/java/com/clinica/api/
-├── controller/         # Endpoints REST (InsumoController, AutenticacaoController, etc.)
-├── dto/                # Data Transfer Objects (Records de entrada e saída)
-├── domain/
-│   └── model/          # Entidades JPA (Insumo, UsoInsumo, Funcionario, etc.)
-├── repository/         # Interfaces Spring Data JPA
-└── service/            # Regras de negócio, transações e validações de estoque
-```
+### 📦 2. Controle de Estoque (`/api/produtos`)
+- Cadastro e atualização de produtos em estoque.
+- Controle de quantidades e alertas para reposição de materiais da clínica.
+
+### 📅 3. Módulo de Agendamentos (`/api/agendamentos`)
+- Agendamento de procedimentos estéticos vinculando Cliente, Serviço e Profissional.
+- Regra de negócio para validação de conflitos de horários.
+- **Endpoints:**
+  - `POST /api/agendamentos` — Cria um novo agendamento.
+  - `GET /api/agendamentos` — Lista todos os agendamentos registrados.
+  - `GET /api/agendamentos/{id}` — Busca os detalhes de um agendamento específico.
+  - `PATCH /api/agendamentos/{id}/status` — Atualiza o status do agendamento (`PENDENTE`, `CONFIRMADO`, `CANCELADO`, etc.).
+
+---
+
+## ⚙️ Como Executar o Projeto Localmente
+
+### Pré-requisitos
+- Java 21 instalado
+- MySQL instalado e rodando
+- Git
+
+### Passos:
+
+**Clonar o repositório:**
+   ```bash
+   git clone https://github.com/leonardodasilvaleitedev/clinica-estetica-api.git
+   cd clinica-estetica-api
+   ```
 
 ✒️ Autor
 
