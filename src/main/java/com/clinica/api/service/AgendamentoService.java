@@ -1,10 +1,10 @@
 package com.clinica.api.service;
 
+import com.clinica.api.domain.enums.StatusAgendamento;
 import com.clinica.api.domain.model.Agendamento;
 import com.clinica.api.domain.model.Cliente;
 import com.clinica.api.domain.model.Funcionario;
 import com.clinica.api.domain.model.Servico;
-import com.clinica.api.domain.enums.StatusAgendamento;
 import com.clinica.api.dto.Agendamento.AgendamentoRequestDTO;
 import com.clinica.api.dto.Agendamento.AgendamentoResponseDTO;
 import com.clinica.api.repository.AgendamentoRepository;
@@ -47,17 +47,28 @@ public class AgendamentoService {
         Funcionario funcionario = funcionarioRepository.findById(dto.funcionarioId())
                 .orElseThrow(() -> new EntityNotFoundException("Funcionário não encontrado com ID: " + dto.funcionarioId()));
 
+        // Cálculo do horário final
+        int duracaoMinutos = (servico.getDuracaoMinutos() != null) ? servico.getDuracaoMinutos() : 60;
+        LocalDateTime dataHoraInicio = dto.dataHoraInicio();
+        LocalDateTime dataHoraFim = dataHoraInicio.plusMinutes(duracaoMinutos);
+
+        // Validação de conflito de agenda
+        boolean existeConflito = agendamentoRepository.existeConflitoHorario(
+                dto.funcionarioId(), dataHoraInicio, dataHoraFim);
+
+        if (existeConflito) {
+            throw new IllegalArgumentException("O profissional já possui um agendamento neste intervalo de horário.");
+        }
+
         Agendamento agendamento = new Agendamento();
         agendamento.setCliente(cliente);
         agendamento.setServico(servico);
         agendamento.setFuncionario(funcionario);
-        agendamento.setDataHoraInicio(dto.dataHoraInicio());
+        agendamento.setDataHoraInicio(dataHoraInicio);
+        agendamento.setDataHoraFim(dataHoraFim);
         agendamento.setObservacao(dto.observacao());
         agendamento.setCriadoEm(LocalDateTime.now());
-
-        if (agendamento.getStatus() == null) {
-            agendamento.setStatus(StatusAgendamento.AGENDADO);
-        }
+        agendamento.setStatus(StatusAgendamento.AGENDADO);
 
         if (dto.valorCobrado() != null) {
             agendamento.setValorCobrado(dto.valorCobrado());
@@ -65,23 +76,32 @@ public class AgendamentoService {
             agendamento.setValorCobrado(servico.getPrecoBase());
         }
 
-        if (servico.getDuracaoMinutos() != null) {
-            agendamento.setDataHoraFim(dto.dataHoraInicio().plusMinutes(servico.getDuracaoMinutos()));
-        } else {
-            agendamento.setDataHoraFim(dto.dataHoraInicio().plusHours(1));
-        }
-
         Agendamento agendamentoSalvo = agendamentoRepository.save(agendamento);
-
         return new AgendamentoResponseDTO(agendamentoSalvo);
     }
 
-    // --- MÉTODO PARA LISTAR TODOS OS AGENDAMENTOS ---
+    @Transactional(readOnly = true)
     public List<AgendamentoResponseDTO> listarTodos() {
-        return agendamentoRepository.findAll()
+        return agendamentoRepository.findAllComRelacionamentos()
                 .stream()
                 .map(AgendamentoResponseDTO::new)
                 .toList();
     }
 
+    @Transactional(readOnly = true)
+    public AgendamentoResponseDTO buscarPorIdDto(Long id) {
+        Agendamento agendamento = agendamentoRepository.findByIdComRelacionamentos(id)
+                .orElseThrow(() -> new EntityNotFoundException("Agendamento não encontrado com ID: " + id));
+        return new AgendamentoResponseDTO(agendamento);
+    }
+
+    @Transactional
+    public AgendamentoResponseDTO atualizarStatus(Long id, StatusAgendamento novoStatus) {
+        Agendamento agendamento = agendamentoRepository.findByIdComRelacionamentos(id)
+                .orElseThrow(() -> new EntityNotFoundException("Agendamento não encontrado com ID: " + id));
+
+        agendamento.setStatus(novoStatus);
+        Agendamento agendamentoAtualizado = agendamentoRepository.save(agendamento);
+        return new AgendamentoResponseDTO(agendamentoAtualizado);
+    }
 }
