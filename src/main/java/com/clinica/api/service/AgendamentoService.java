@@ -8,6 +8,7 @@ import com.clinica.api.domain.model.Funcionario;
 import com.clinica.api.domain.model.Servico;
 import com.clinica.api.dto.Agendamento.AgendamentoRequestDTO;
 import com.clinica.api.dto.Agendamento.AgendamentoResponseDTO;
+import com.clinica.api.dto.estoque.RegistrarUsoInsumoDTO;
 import com.clinica.api.dto.financeiro.TransacaoRequestDTO;
 import com.clinica.api.repository.AgendamentoRepository;
 import com.clinica.api.repository.ClienteRepository;
@@ -17,6 +18,7 @@ import jakarta.persistence.EntityNotFoundException;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.math.BigDecimal;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.util.List;
@@ -29,17 +31,20 @@ public class AgendamentoService {
     private final ServicoRepository servicoRepository;
     private final FuncionarioRepository funcionarioRepository;
     private final TransacaoFinanceiraService transacaoFinanceiraService;
+    private final EstoqueService estoqueService;
 
     public AgendamentoService(AgendamentoRepository agendamentoRepository,
                               ClienteRepository clienteRepository,
                               ServicoRepository servicoRepository,
                               FuncionarioRepository funcionarioRepository,
-                              TransacaoFinanceiraService transacaoFinanceiraService) {
+                              TransacaoFinanceiraService transacaoFinanceiraService,
+                              EstoqueService estoqueService ) {
         this.agendamentoRepository = agendamentoRepository;
         this.clienteRepository = clienteRepository;
         this.servicoRepository = servicoRepository;
         this.funcionarioRepository = funcionarioRepository;
         this.transacaoFinanceiraService = transacaoFinanceiraService;
+        this.estoqueService = estoqueService;
     }
 
     @Transactional
@@ -82,14 +87,14 @@ public class AgendamentoService {
         return new AgendamentoResponseDTO(agendamentoSalvo);
     }
 
-    // --- MÉTODO PARA LISTAR TODOS OS AGENDAMENTOS ---
+    //  MÉTODO PARA LISTAR TODOS OS AGENDAMENTOS
     public List<AgendamentoResponseDTO> listarTodos() {
         return agendamentoRepository.findAll().stream()
                 .map(AgendamentoResponseDTO::new)
                 .toList();
     }
 
-    // --- MÉTODO PARA CONCLUIR AGENDAMENTO E GERAR TRANSAÇÃO FINANCEIRA ---
+    // MÉTODO PARA CONCLUIR AGENDAMENTO E GERAR TRANSAÇÃO FINANCEIRA
     @Transactional
     public AgendamentoResponseDTO concluirAgendamento(Long id) {
         Agendamento agendamento = agendamentoRepository.findById(id)
@@ -109,6 +114,17 @@ public class AgendamentoService {
                 .build();
 
         transacaoFinanceiraService.criar(transacaoDTO);
+
+
+        // Registo de uso do insumo para baixar o stock automaticamente
+        RegistrarUsoInsumoDTO usoDTO = new RegistrarUsoInsumoDTO(
+                agendamento.getFuncionario().getId(),
+                1L, // ID do insumo (ajusta conforme o ID do insumo criado)
+                BigDecimal.ONE,
+                "Baixa automática via conclusão do agendamento #" + agendamento.getId()
+        );
+
+        estoqueService.registrarUso(usoDTO);
 
         return new AgendamentoResponseDTO(agendamentoAtualizado);
     }
