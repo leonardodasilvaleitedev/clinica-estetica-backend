@@ -17,7 +17,7 @@ public class ClienteController {
 
     private final ClienteService clienteService;
 
-    // Injeção de dependência via construtor (Boa prática do Spring)
+
     public ClienteController(ClienteService clienteService) {
         this.clienteService = clienteService;
     }

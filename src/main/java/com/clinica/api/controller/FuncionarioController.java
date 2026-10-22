@@ -32,7 +32,7 @@ public class FuncionarioController {
                 .cpf(dto.cpf())
                 .email(dto.email())
                 .telefone(dto.telefone())
-                .senha(passwordEncoder.encode(dto.senha())) // Codifica a senha com BCrypt e usa .senha()
+                .senha(passwordEncoder.encode(dto.senha()))
                 .cargo(Cargo.valueOf(dto.cargo().toUpperCase()))
                 .percentualComissao(dto.percentualComissao())
                 .ativo(dto.ativo() != null ? dto.ativo() : true)
