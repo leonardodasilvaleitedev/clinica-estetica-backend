@@ -34,6 +34,13 @@ API Backend robusta desenvolvida para a gestão completa de uma clínica de est�
   - `GET /api/agendamentos` — Lista todos os agendamentos registrados.
   - `GET /api/agendamentos/{id}` — Busca os detalhes de um agendamento específico.
   - `PATCH /api/agendamentos/{id}/status` — Atualiza o status do agendamento (`PENDENTE`, `CONFIRMADO`, `CANCELADO`, etc.).
+ 
+###💰 4. Módulo de Transações Financeiras (`/api/transacoes`)
+* Controlo completo do fluxo de caixa da clínica com registo de Receitas e Despesas.
+* Gestão de formas de pagamento, datas de transação/pagamento e cálculo de comissões para esteticistas.
+* Endpoints:
+  * `POST /api/transacoes` — Regista uma nova transação financeira (Receita ou Despesa).
+  * `GET /api/transacoes` — Lista todas as transações financeiras registadas no sistema.
 
 ---
 
