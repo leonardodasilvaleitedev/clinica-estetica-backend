@@ -42,6 +42,18 @@ API Backend robusta desenvolvida para a gestão completa de uma clínica de est�
   * `POST /api/transacoes` — Regista uma nova transação financeira (Receita ou Despesa).
   * `GET /api/transacoes` — Lista todas as transações financeiras registadas no sistema.
 
+### 📦 Módulo de Estoque e Insumos (`/api/insumos`)
+* **Cadastro de Insumos**: Controle de produtos e materiais utilizados nos atendimentos (nome, marca, unidade de medida, quantidade em estoque e estoque mínimo).
+* **Registro de Uso (`/api/insumos/usos`)**: Registro manual ou automático do consumo de insumos por funcionário.
+* **Baixa Automática**: Integração com o fluxo de conclusão de agendamentos, garantindo que o estoque seja abatido em tempo real de forma transacional (`@Transactional`).
+
+### 🔄 Fluxo de Conclusão de Atendimento
+* **Endpoint**: `PATCH /api/agendamentos/{id}/concluir`
+* **Comportamento Automatizado**: 
+  1. Altera o status do agendamento para `CONCLUIDO`.
+  2. Gera automaticamente a **Transação Financeira de Receita** correspondente ao valor cobrado.
+  3. Dispara a baixa automática do estoque dos insumos associados.
+
 ---
 
 ## ⚙️ Como Executar o Projeto Localmente
