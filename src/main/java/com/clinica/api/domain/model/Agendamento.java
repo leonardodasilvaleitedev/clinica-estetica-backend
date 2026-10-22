@@ -51,4 +51,5 @@ public class Agendamento {
     @CreationTimestamp
     @Column(name = "criado_em", updatable = false)
     private LocalDateTime criadoEm;
+
 }

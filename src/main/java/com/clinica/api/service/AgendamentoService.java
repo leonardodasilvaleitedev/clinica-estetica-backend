@@ -1,12 +1,14 @@
 package com.clinica.api.service;
 
-import com.clinica.api.domain.enums.StatusAgendamento;
 import com.clinica.api.domain.model.Agendamento;
+import com.clinica.api.domain.enums.StatusAgendamento;
+import com.clinica.api.domain.enums.TipoTransacao;
 import com.clinica.api.domain.model.Cliente;
 import com.clinica.api.domain.model.Funcionario;
 import com.clinica.api.domain.model.Servico;
 import com.clinica.api.dto.Agendamento.AgendamentoRequestDTO;
 import com.clinica.api.dto.Agendamento.AgendamentoResponseDTO;
+import com.clinica.api.dto.financeiro.TransacaoRequestDTO;
 import com.clinica.api.repository.AgendamentoRepository;
 import com.clinica.api.repository.ClienteRepository;
 import com.clinica.api.repository.FuncionarioRepository;
@@ -15,6 +17,7 @@ import jakarta.persistence.EntityNotFoundException;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.util.List;
 
@@ -25,15 +28,18 @@ public class AgendamentoService {
     private final ClienteRepository clienteRepository;
     private final ServicoRepository servicoRepository;
     private final FuncionarioRepository funcionarioRepository;
+    private final TransacaoFinanceiraService transacaoFinanceiraService;
 
     public AgendamentoService(AgendamentoRepository agendamentoRepository,
                               ClienteRepository clienteRepository,
                               ServicoRepository servicoRepository,
-                              FuncionarioRepository funcionarioRepository) {
+                              FuncionarioRepository funcionarioRepository,
+                              TransacaoFinanceiraService transacaoFinanceiraService) {
         this.agendamentoRepository = agendamentoRepository;
         this.clienteRepository = clienteRepository;
         this.servicoRepository = servicoRepository;
         this.funcionarioRepository = funcionarioRepository;
+        this.transacaoFinanceiraService = transacaoFinanceiraService;
     }
 
     @Transactional
@@ -47,28 +53,17 @@ public class AgendamentoService {
         Funcionario funcionario = funcionarioRepository.findById(dto.funcionarioId())
                 .orElseThrow(() -> new EntityNotFoundException("Funcionário não encontrado com ID: " + dto.funcionarioId()));
 
-        // Cálculo do horário final
-        int duracaoMinutos = (servico.getDuracaoMinutos() != null) ? servico.getDuracaoMinutos() : 60;
-        LocalDateTime dataHoraInicio = dto.dataHoraInicio();
-        LocalDateTime dataHoraFim = dataHoraInicio.plusMinutes(duracaoMinutos);
-
-        // Validação de conflito de agenda
-        boolean existeConflito = agendamentoRepository.existeConflitoHorario(
-                dto.funcionarioId(), dataHoraInicio, dataHoraFim);
-
-        if (existeConflito) {
-            throw new IllegalArgumentException("O profissional já possui um agendamento neste intervalo de horário.");
-        }
-
         Agendamento agendamento = new Agendamento();
         agendamento.setCliente(cliente);
         agendamento.setServico(servico);
         agendamento.setFuncionario(funcionario);
-        agendamento.setDataHoraInicio(dataHoraInicio);
-        agendamento.setDataHoraFim(dataHoraFim);
+        agendamento.setDataHoraInicio(dto.dataHoraInicio());
         agendamento.setObservacao(dto.observacao());
         agendamento.setCriadoEm(LocalDateTime.now());
-        agendamento.setStatus(StatusAgendamento.AGENDADO);
+
+        if (agendamento.getStatus() == null) {
+            agendamento.setStatus(StatusAgendamento.AGENDADO);
+        }
 
         if (dto.valorCobrado() != null) {
             agendamento.setValorCobrado(dto.valorCobrado());
@@ -76,32 +71,45 @@ public class AgendamentoService {
             agendamento.setValorCobrado(servico.getPrecoBase());
         }
 
+        if (servico.getDuracaoMinutos() != null) {
+            agendamento.setDataHoraFim(dto.dataHoraInicio().plusMinutes(servico.getDuracaoMinutos()));
+        } else {
+            agendamento.setDataHoraFim(dto.dataHoraInicio().plusHours(1));
+        }
+
         Agendamento agendamentoSalvo = agendamentoRepository.save(agendamento);
+
         return new AgendamentoResponseDTO(agendamentoSalvo);
     }
 
-    @Transactional(readOnly = true)
+    // --- MÉTODO PARA LISTAR TODOS OS AGENDAMENTOS ---
     public List<AgendamentoResponseDTO> listarTodos() {
-        return agendamentoRepository.findAllComRelacionamentos()
-                .stream()
+        return agendamentoRepository.findAll().stream()
                 .map(AgendamentoResponseDTO::new)
                 .toList();
     }
 
-    @Transactional(readOnly = true)
-    public AgendamentoResponseDTO buscarPorIdDto(Long id) {
-        Agendamento agendamento = agendamentoRepository.findByIdComRelacionamentos(id)
-                .orElseThrow(() -> new EntityNotFoundException("Agendamento não encontrado com ID: " + id));
-        return new AgendamentoResponseDTO(agendamento);
-    }
-
+    // --- MÉTODO PARA CONCLUIR AGENDAMENTO E GERAR TRANSAÇÃO FINANCEIRA ---
     @Transactional
-    public AgendamentoResponseDTO atualizarStatus(Long id, StatusAgendamento novoStatus) {
-        Agendamento agendamento = agendamentoRepository.findByIdComRelacionamentos(id)
+    public AgendamentoResponseDTO concluirAgendamento(Long id) {
+        Agendamento agendamento = agendamentoRepository.findById(id)
                 .orElseThrow(() -> new EntityNotFoundException("Agendamento não encontrado com ID: " + id));
 
-        agendamento.setStatus(novoStatus);
+        agendamento.setStatus(StatusAgendamento.CONCLUIDO);
         Agendamento agendamentoAtualizado = agendamentoRepository.save(agendamento);
+
+        TransacaoRequestDTO transacaoDTO = TransacaoRequestDTO.builder()
+                .descricao("Atendimento: " + agendamento.getServico().getNome() + " - Cliente: " + agendamento.getCliente().getNome())
+                .valor(agendamento.getValorCobrado())
+                .tipo(TipoTransacao.RECEITA)
+                .formaPagamento("PIX")
+                .dataTransacao(LocalDate.now())
+                .dataPagamento(LocalDateTime.now())
+                .agendamentoId(agendamento.getId())   
+                .build();
+
+        transacaoFinanceiraService.criar(transacaoDTO);
+
         return new AgendamentoResponseDTO(agendamentoAtualizado);
     }
 }
