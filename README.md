@@ -50,9 +50,9 @@ API Backend robusta desenvolvida para a gestão completa de uma clínica de est�
 ### 🔄 Fluxo de Conclusão de Atendimento
 * **Endpoint**: `PATCH /api/agendamentos/{id}/concluir`
 * **Comportamento Automatizado**: 
-  1. Altera o status do agendamento para `CONCLUIDO`.
-  2. Gera automaticamente a **Transação Financeira de Receita** correspondente ao valor cobrado.
-  3. Dispara a baixa automática do estoque dos insumos associados.
+  1 Altera o status do agendamento para `CONCLUIDO`.
+  2 Gera automaticamente a **Transação Financeira de Receita** correspondente ao valor cobrado.
+  3 Dispara a baixa automática do estoque dos insumos associados.
 
 ---
 
