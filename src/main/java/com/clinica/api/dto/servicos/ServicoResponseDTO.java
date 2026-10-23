@@ -11,6 +11,10 @@ public record ServicoResponseDTO(
         BigDecimal preco,
         Boolean ativo
 ) {
+    /**
+     * Construtor que mapeia os atributos da entidade Servico
+     * diretamente para os campos do DTO de resposta.
+     */
     public ServicoResponseDTO(Servico servico) {
         this(
                 servico.getId(),

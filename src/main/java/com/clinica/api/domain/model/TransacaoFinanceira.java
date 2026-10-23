@@ -27,6 +27,7 @@ public class TransacaoFinanceira {
     @Column(nullable = false)
     private BigDecimal valor;
 
+    // Armazena o tipo da transação (ex: receita ou despesa) como texto no banco de dados
     @Enumerated(EnumType.STRING)
     @Column(nullable = false)
     private TipoTransacao tipo;
@@ -40,5 +41,6 @@ public class TransacaoFinanceira {
     @Column(name = "data_pagamento")
     private LocalDateTime dataPagamento;
 
+    // Referência opcional ao ID do agendamento que originou a transação
     private Long agendamentoId;
 }

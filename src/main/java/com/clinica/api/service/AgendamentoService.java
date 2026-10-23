@@ -33,6 +33,7 @@ public class AgendamentoService {
     private final TransacaoFinanceiraService transacaoFinanceiraService;
     private final EstoqueService estoqueService;
 
+    // Injeção de dependências via construtor
     public AgendamentoService(AgendamentoRepository agendamentoRepository,
                               ClienteRepository clienteRepository,
                               ServicoRepository servicoRepository,
@@ -47,6 +48,10 @@ public class AgendamentoService {
         this.estoqueService = estoqueService;
     }
 
+    /**
+     * Cria um novo agendamento validando a existência do cliente, serviço e funcionário,
+     * calculando valores e definindo a data/hora de término com base na duração do serviço.
+     */
     @Transactional
     public AgendamentoResponseDTO criarComDto(AgendamentoRequestDTO dto) {
         Cliente cliente = clienteRepository.findById(dto.clienteId())
@@ -66,16 +71,19 @@ public class AgendamentoService {
         agendamento.setObservacao(dto.observacao());
         agendamento.setCriadoEm(LocalDateTime.now());
 
+        // Define o status padrão como AGENDADO caso não venha preenchido
         if (agendamento.getStatus() == null) {
             agendamento.setStatus(StatusAgendamento.AGENDADO);
         }
 
+        // Define o valor cobrado (se não informado, assume o preço base do serviço)
         if (dto.valorCobrado() != null) {
             agendamento.setValorCobrado(dto.valorCobrado());
         } else {
             agendamento.setValorCobrado(servico.getPrecoBase());
         }
 
+        // Calcula a data/hora de término com base na duração em minutos do serviço
         if (servico.getDuracaoMinutos() != null) {
             agendamento.setDataHoraFim(dto.dataHoraInicio().plusMinutes(servico.getDuracaoMinutos()));
         } else {
@@ -87,13 +95,18 @@ public class AgendamentoService {
         return new AgendamentoResponseDTO(agendamentoSalvo);
     }
 
-    //  MÉTODO PARA LISTAR TODOS OS AGENDAMENTOS
+    // MÉTODO PARA LISTAR TODOS OS AGENDAMENTOS
     public List<AgendamentoResponseDTO> listarTodos() {
         return agendamentoRepository.findAll().stream()
                 .map(AgendamentoResponseDTO::new)
                 .toList();
     }
 
+
+    /**
+     * Conclui um agendamento, gera automaticamente a transação financeira de receita
+     * e processa a baixa dinâmica de insumos utilizados no estoque.
+     */
     // MÉTODO PARA CONCLUIR AGENDAMENTO E GERAR TRANSAÇÃO FINANCEIRA E BAIXA DE ESTOQUE FLEXÍVEL
     @Transactional
     public AgendamentoResponseDTO concluirAgendamento(Long id, List<RegistrarUsoInsumoDTO> insumosUsados) {

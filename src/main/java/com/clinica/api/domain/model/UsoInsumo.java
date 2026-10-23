@@ -12,10 +12,12 @@ public class UsoInsumo {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
+    // Relacionamento N para 1 com o funcionário que registrou ou utilizou o insumo
     @ManyToOne(optional = false)
     @JoinColumn(name = "funcionario_id")
     private Funcionario funcionario;
 
+    // Relacionamento N para 1 com o insumo que foi consumido
     @ManyToOne(optional = false)
     @JoinColumn(name = "insumo_id")
     private Insumo insumo;
@@ -28,10 +30,12 @@ public class UsoInsumo {
 
     private String observacao;
 
+    // Construtor padrão que inicializa a data do uso automaticamente com o momento atual
     public UsoInsumo() {
         this.dataUso = LocalDateTime.now();
     }
 
+    // Getters e Setters
     public Long getId() {return id;}
     public void setId(Long id) {this.id = id;}
 

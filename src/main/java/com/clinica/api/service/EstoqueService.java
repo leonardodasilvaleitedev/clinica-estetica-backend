@@ -21,12 +21,17 @@ public class EstoqueService {
     private final UsoInsumoRepository usoInsumoRepository;
     private final FuncionarioRepository funcionarioRepository;
 
+    // Injeção de dependências dos repositórios via construtor
     public EstoqueService(InsumoRepository insumoRepository, UsoInsumoRepository usoInsumoRepository, FuncionarioRepository funcionarioRepository) {
         this.insumoRepository = insumoRepository;
         this.usoInsumoRepository = usoInsumoRepository;
         this.funcionarioRepository = funcionarioRepository;
     }
 
+    /**
+     * Cadastra um novo insumo no estoque a partir do DTO recebido,
+     * salvando no banco de dados e retornando o DTO correspondente.
+     */
     @Transactional
     public InsumoDTO cadastroInsumo(InsumoDTO dto){
         Insumo insumo = new Insumo(
@@ -47,6 +52,10 @@ public class EstoqueService {
         );
     }
 
+    /**
+     * Lista todos os insumos cadastrados no estoque,
+     * convertendo cada entidade em seu respectivo DTO.
+     */
     public List<InsumoDTO> listaInsumos(){
         return insumoRepository.findAll().stream().map(i -> new InsumoDTO(
                 i.getId(),
@@ -58,6 +67,10 @@ public class EstoqueService {
         )).toList();
     }
 
+    /**
+     * Registra o uso de um insumo por um funcionário, abatendo a quantidade
+     * do estoque e disparando exceção caso o saldo seja insuficiente.
+     */
     @Transactional
     public UsoInsumoResponseDTO registrarUso(RegistrarUsoInsumoDTO dto){
         Funcionario funcionario = funcionarioRepository.findById(dto.funcionarioId())
@@ -88,6 +101,9 @@ public class EstoqueService {
         );
     }
 
+    /**
+     * Lista todos os registros de uso de insumos vinculados a um funcionário específico.
+     */
     public List<UsoInsumoResponseDTO> listarUsoPorFuncionario(Long funcionarioId){
         return usoInsumoRepository.findByFuncionarioId(funcionarioId).stream()
                 .map(u-> new UsoInsumoResponseDTO(

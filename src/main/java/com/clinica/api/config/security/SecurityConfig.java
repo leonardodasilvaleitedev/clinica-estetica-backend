@@ -23,6 +23,9 @@ public class SecurityConfig {
         this.jwtAuthenticationFilter = jwtAuthenticationFilter;
     }
 
+    /**
+     * Configura a cadeia de filtros de segurança HTTP (regras de acesso, CSRF, Sessão e Filtro JWT).
+     */
     @Bean
     public SecurityFilterChain securityFilterChain(HttpSecurity http) throws Exception {
         return http
@@ -38,11 +41,17 @@ public class SecurityConfig {
                 .build();
     }
 
+    /**
+     * Expõe o AuthenticationManager para gerir a autenticação nas rotas de login.
+     */
     @Bean
     public AuthenticationManager authenticationManager(AuthenticationConfiguration configuration) throws Exception {
         return configuration.getAuthenticationManager();
     }
 
+    /**
+     * Define o algoritmo BCrypt para o hash e validação segura das passwords.
+     */
     @Bean
     public PasswordEncoder passwordEncoder() {
         return new BCryptPasswordEncoder();

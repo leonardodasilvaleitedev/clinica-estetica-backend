@@ -16,9 +16,9 @@ public class Insumo {
 
     private String marca;
 
-
+    // Unidade de medida (ex: ML, GRAMAS, UNIDADE)
     @Column(nullable = false)
-    private String unidadeMedida; // ex: ML, GRAMAS, UNIDADE
+    private String unidadeMedida;
 
     @Column(nullable = false)
     private BigDecimal quantidadeEstoque;
@@ -37,6 +37,10 @@ public class Insumo {
         this.estoqueMinimo = estoqueMinimo;
     }
 
+    /**
+     * Valida se existe quantidade suficiente em estoque e abate o valor informado,
+     * lançando uma exceção caso o estoque seja insuficiente.
+     */
     public void abaterEstoque(BigDecimal quantidade) {
         if (this.quantidadeEstoque.compareTo(quantidade) < 0) {
             throw  new IllegalArgumentException(" Quantidade insuficiente em estoque!");

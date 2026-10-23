@@ -14,7 +14,11 @@ public record ClienteResponseDTO(
         String observacoesMedicas,
         Boolean ativo
 ) {
-    // Construtor auxiliar para mapear diretamente da Entidade
+
+    /**
+     * Construtor que mapeia os atributos da entidade Cliente diretamente
+     * para os campos do DTO de resposta.
+     */
     public ClienteResponseDTO(Cliente cliente) {
         this(
                 cliente.getId(),

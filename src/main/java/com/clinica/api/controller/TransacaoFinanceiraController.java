@@ -21,24 +21,36 @@ public class TransacaoFinanceiraController {
         this.service = service;
     }
 
+    /**
+     * Endpoint POST para registar uma nova transação financeira (receita ou despesa).
+     */
     @PostMapping
     public ResponseEntity<TransacaoResponseDTO> criar(@RequestBody @Valid TransacaoRequestDTO dto) {
         TransacaoResponseDTO novaTransacao = service.criar(dto);
         return ResponseEntity.status(HttpStatus.CREATED).body(novaTransacao);
     }
 
+    /**
+     * Endpoint GET para listar todas as transações financeiras registadas.
+     */
     @GetMapping
     public ResponseEntity<List<TransacaoResponseDTO>> listarTodas() {
         List<TransacaoResponseDTO> transacoes = service.listarTodas();
         return ResponseEntity.ok(transacoes);
     }
 
+    /**
+     * Endpoint GET para consultar uma transação financeira específica através do seu ID.
+     */
     @GetMapping("/{id}")
     public ResponseEntity<TransacaoResponseDTO> buscarPorId(@PathVariable Long id) {
         TransacaoResponseDTO transacao = service.buscarPorId(id);
         return ResponseEntity.ok(transacao);
     }
 
+    /**
+     * Endpoint GET para obter o resumo financeiro geral (balanço de receitas, despesas e saldo total).
+     */
     @GetMapping("/resumo")
     public ResponseEntity<ResumoFinanceiroDTO> obterResumoFinanceiro() {
         ResumoFinanceiroDTO resumo = service.obterResumoFinanceiro();

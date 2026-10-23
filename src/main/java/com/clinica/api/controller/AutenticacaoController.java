@@ -26,12 +26,18 @@ public class AutenticacaoController {
         this.jwtTokenService = jwtTokenService;
     }
 
-    // Endpoint rápido para verificar se a rota pública responde
+    /**
+     * Endpoint GET de teste para verificar se as rotas públicas respondem corretamente.
+     */
     @GetMapping("/teste")
     public ResponseEntity<String> teste() {
         return ResponseEntity.ok("Rota pública de autenticação funcionando corretamente!");
     }
 
+    /**
+     * Endpoint POST de login que autentica as credenciais do funcionário
+     * e retorna o token JWT juntamente com os dados essenciais de acesso.
+     */
     @PostMapping("/login")
     public ResponseEntity<?> login(@RequestBody @Valid LoginRequestDTO dto) {
         try {

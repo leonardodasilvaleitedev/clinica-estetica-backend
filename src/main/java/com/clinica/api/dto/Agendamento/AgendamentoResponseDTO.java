@@ -18,6 +18,11 @@ public record AgendamentoResponseDTO(
         String status,
         String observacao
 ) {
+
+    /**
+     * Construtor que mapeia os dados da entidade Agendamento para o DTO de resposta,
+     * garantindo proteção contra valores nulos (null-safety) nos relacionamentos.
+     */
     public AgendamentoResponseDTO(Agendamento agendamento) {
         this(
                 agendamento.getId(),

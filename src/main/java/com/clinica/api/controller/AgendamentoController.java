@@ -21,18 +21,28 @@ public class AgendamentoController {
         this.agendamentoService = agendamentoService;
     }
 
+    /**
+     * Endpoint POST para criar um novo agendamento, validando os dados de entrada.
+     */
     @PostMapping
     public ResponseEntity<AgendamentoResponseDTO> criar(@RequestBody @Valid AgendamentoRequestDTO dto) {
         AgendamentoResponseDTO agendamentoCriado = agendamentoService.criarComDto(dto);
         return ResponseEntity.status(HttpStatus.CREATED).body(agendamentoCriado);
     }
 
+    /**
+     * Endpoint GET para listar todos os agendamentos registados.
+     */
     @GetMapping
     public ResponseEntity<List<AgendamentoResponseDTO>> listar() {
         List<AgendamentoResponseDTO> agendamentos = agendamentoService.listarTodos();
         return ResponseEntity.ok(agendamentos);
     }
 
+    /**
+     * Endpoint PATCH para concluir um agendamento específico, permitindo opcionalmente
+     * o envio de uma lista dinâmica de insumos utilizados para a baixa automática no stock.
+     */
     @PatchMapping("/{id}/concluir")
     public ResponseEntity<AgendamentoResponseDTO> concluirAgendamento(
             @PathVariable Long id,

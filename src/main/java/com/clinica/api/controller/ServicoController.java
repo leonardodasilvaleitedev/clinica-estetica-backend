@@ -21,6 +21,9 @@ public class ServicoController {
         this.servicoRepository = servicoRepository;
     }
 
+    /**
+     * Endpoint POST para cadastrar um novo serviço/procedimento estético na base de dados.
+     */
     @PostMapping
     public ResponseEntity<ServicoResponseDTO> criar(@RequestBody @Valid ServicoRequestDTO dto) {
         var servico = Servico.builder()
@@ -35,6 +38,9 @@ public class ServicoController {
         return ResponseEntity.status(HttpStatus.CREATED).body(new ServicoResponseDTO(salvo));
     }
 
+    /**
+     * Endpoint GET para listar todos os serviços disponíveis na clínica.
+     */
     @GetMapping
     public ResponseEntity<List<ServicoResponseDTO>> listar() {
         var servicos = servicoRepository.findAll()

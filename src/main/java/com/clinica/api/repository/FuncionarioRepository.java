@@ -8,5 +8,10 @@ import java.util.Optional;
 
 @Repository
 public interface FuncionarioRepository extends JpaRepository<Funcionario, Long> {
+
+     /**
+     * Busca um funcionário cadastrado pelo seu e-mail,
+     * retornando um Optional para tratamento seguro de nulos.
+     */
     Optional<Funcionario> findByEmail(String email);
 }
