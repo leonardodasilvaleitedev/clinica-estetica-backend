@@ -94,15 +94,16 @@ public class AgendamentoService {
                 .toList();
     }
 
-    // MÉTODO PARA CONCLUIR AGENDAMENTO E GERAR TRANSAÇÃO FINANCEIRA
+    // MÉTODO PARA CONCLUIR AGENDAMENTO E GERAR TRANSAÇÃO FINANCEIRA E BAIXA DE ESTOQUE FLEXÍVEL
     @Transactional
-    public AgendamentoResponseDTO concluirAgendamento(Long id) {
+    public AgendamentoResponseDTO concluirAgendamento(Long id, List<RegistrarUsoInsumoDTO> insumosUsados) {
         Agendamento agendamento = agendamentoRepository.findById(id)
                 .orElseThrow(() -> new EntityNotFoundException("Agendamento não encontrado com ID: " + id));
 
         agendamento.setStatus(StatusAgendamento.CONCLUIDO);
         Agendamento agendamentoAtualizado = agendamentoRepository.save(agendamento);
 
+        // Gerar transação financeira automaticamente
         TransacaoRequestDTO transacaoDTO = TransacaoRequestDTO.builder()
                 .descricao("Atendimento: " + agendamento.getServico().getNome() + " - Cliente: " + agendamento.getCliente().getNome())
                 .valor(agendamento.getValorCobrado())
@@ -110,21 +111,26 @@ public class AgendamentoService {
                 .formaPagamento("PIX")
                 .dataTransacao(LocalDate.now())
                 .dataPagamento(LocalDateTime.now())
-                .agendamentoId(agendamento.getId())   
+                .agendamentoId(agendamento.getId())
                 .build();
 
         transacaoFinanceiraService.criar(transacaoDTO);
 
+        // Processar a lista dinâmica de insumos enviados pelo front-end
+        if (insumosUsados != null && !insumosUsados.isEmpty()) {
+            Long funcionarioId = agendamento.getFuncionario().getId();
 
-        // Registo de uso do insumo para baixar o stock automaticamente
-        RegistrarUsoInsumoDTO usoDTO = new RegistrarUsoInsumoDTO(
-                agendamento.getFuncionario().getId(),
-                1L, // ID do insumo (ajusta conforme o ID do insumo criado)
-                BigDecimal.ONE,
-                "Baixa automática via conclusão do agendamento #" + agendamento.getId()
-        );
+            for (RegistrarUsoInsumoDTO item : insumosUsados) {
+                RegistrarUsoInsumoDTO usoDTO = new RegistrarUsoInsumoDTO(
+                        funcionarioId,
+                        item.insumoId(),
+                        item.quantidadeUsada(),
+                        item.observacao() != null ? item.observacao() : "Baixa automática via conclusão do agendamento #" + agendamento.getId()
+                );
 
-        estoqueService.registrarUso(usoDTO);
+                estoqueService.registrarUso(usoDTO);
+            }
+        }
 
         return new AgendamentoResponseDTO(agendamentoAtualizado);
     }
