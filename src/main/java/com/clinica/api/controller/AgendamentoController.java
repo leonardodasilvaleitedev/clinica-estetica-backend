@@ -4,6 +4,7 @@ import java.util.List;
 
 import com.clinica.api.dto.Agendamento.AgendamentoRequestDTO;
 import com.clinica.api.dto.Agendamento.AgendamentoResponseDTO;
+import com.clinica.api.dto.estoque.RegistrarUsoInsumoDTO;
 import com.clinica.api.service.AgendamentoService;
 import jakarta.validation.Valid;
 import org.springframework.http.HttpStatus;
@@ -33,8 +34,11 @@ public class AgendamentoController {
     }
 
     @PatchMapping("/{id}/concluir")
-    public ResponseEntity<AgendamentoResponseDTO> concluirAgendamento(@PathVariable Long id) {
-        AgendamentoResponseDTO agendamentoConcluido = agendamentoService.concluirAgendamento(id);
-        return ResponseEntity.ok(agendamentoConcluido);
+    public ResponseEntity<AgendamentoResponseDTO> concluirAgendamento(
+            @PathVariable Long id,
+            @RequestBody(required = false) List<RegistrarUsoInsumoDTO> insumosUsados) {
+
+        AgendamentoResponseDTO resposta = agendamentoService.concluirAgendamento(id, insumosUsados);
+        return ResponseEntity.ok(resposta);
     }
 }
