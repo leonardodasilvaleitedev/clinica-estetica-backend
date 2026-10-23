@@ -46,6 +46,7 @@ API Backend robusta desenvolvida para a gestão completa de uma clínica de est�
 * **Cadastro de Insumos**: Controle de produtos e materiais utilizados nos atendimentos (nome, marca, unidade de medida, quantidade em estoque e estoque mínimo).
 * **Registro de Uso (`/api/insumos/usos`)**: Registro manual ou automático do consumo de insumos por funcionário.
 * **Baixa Automática**: Integração com o fluxo de conclusão de agendamentos, garantindo que o estoque seja abatido em tempo real de forma transacional (`@Transactional`).
+* **Baixa Automática e Dinâmica:** Integração com o fluxo de conclusão de agendamentos (`PATCH /api/agendamentos/{id}/concluir`), permitindo o envio de uma lista flexível de insumos personalizados ou extras consumidos no atendimento, garantindo que o estoque seja abatido em tempo real de forma segura e transacional (`@Transactional`).
 
 ### 🔄 Fluxo de Conclusão de Atendimento
 * **Endpoint**: `PATCH /api/agendamentos/{id}/concluir`
