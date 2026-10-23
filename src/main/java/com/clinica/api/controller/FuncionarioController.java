@@ -25,6 +25,10 @@ public class FuncionarioController {
         this.passwordEncoder = passwordEncoder;
     }
 
+    /**
+     * Endpoint POST para cadastrar um novo funcionário, aplicando o hash da senha
+     * com BCrypt e guardando os dados na base de dados.
+     */
     @PostMapping
     public ResponseEntity<FuncionarioResponseDTO> criar(@RequestBody @Valid FuncionarioRequestDTO dto) {
         var funcionario = Funcionario.builder()
@@ -42,6 +46,9 @@ public class FuncionarioController {
         return ResponseEntity.status(HttpStatus.CREATED).body(new FuncionarioResponseDTO(salvo));
     }
 
+    /**
+     * Endpoint GET para listar todos os funcionários registados no sistema.
+     */
     @GetMapping
     public ResponseEntity<List<FuncionarioResponseDTO>> listar() {
         var funcionarios = funcionarioRepository.findAll()

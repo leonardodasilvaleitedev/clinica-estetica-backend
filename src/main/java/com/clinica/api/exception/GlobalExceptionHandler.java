@@ -13,6 +13,10 @@ import java.util.Map;
 @RestControllerAdvice
 public class GlobalExceptionHandler {
 
+    /**
+     * Trata exceções do tipo IllegalArgumentException, mapeando para o status HTTP 404 (Not Found)
+     * e retornando um ProblemDetail padronizado com a mensagem do erro.
+     */
     @ExceptionHandler(IllegalArgumentException.class)
     public ProblemDetail handleIllegalArgument(IllegalArgumentException ex) {
         ProblemDetail problem = ProblemDetail.forStatusAndDetail(HttpStatus.NOT_FOUND, ex.getMessage());
@@ -21,6 +25,10 @@ public class GlobalExceptionHandler {
         return problem;
     }
 
+    /**
+     * Trata exceções de estado ilegal (regras de negócio violadas),
+     * retornando o status HTTP 409 (Conflict).
+     */
     @ExceptionHandler(IllegalStateException.class)
     public ProblemDetail handleIllegalState(IllegalStateException ex) {
         ProblemDetail problem = ProblemDetail.forStatusAndDetail(HttpStatus.CONFLICT, ex.getMessage());
@@ -29,6 +37,10 @@ public class GlobalExceptionHandler {
         return problem;
     }
 
+    /**
+     * Trata erros de validação de dados em DTOs (anotações como @NotBlank, @NotNull),
+     * mapeando os campos inválidos para um mapa e retornando o status HTTP 400 (Bad Request).
+     */
     @ExceptionHandler(MethodArgumentNotValidException.class)
     public ProblemDetail handleValidation(MethodArgumentNotValidException ex) {
         Map<String, String> erros = new HashMap<>();

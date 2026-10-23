@@ -19,6 +19,7 @@ public class Cliente {
     @Column(nullable = false)
     private String nome;
 
+    // CPF único e de preenchimento obrigatório para identificação do cliente
     @Column(nullable = false, unique = true)
     private String cpf;
 
@@ -32,6 +33,7 @@ public class Cliente {
 
     private String sexo;
 
+    // Campo dedicado para anotações clínicas e restrições de saúde do cliente
     @Column(name = "observacoes_medicas")
     private String observacoesMedicas;
 

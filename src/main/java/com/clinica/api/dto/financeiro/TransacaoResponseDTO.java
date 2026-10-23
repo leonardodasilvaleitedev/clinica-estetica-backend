@@ -22,6 +22,10 @@ public class TransacaoResponseDTO {
     private LocalDateTime dataPagamento;
     private Long agendamentoId;
 
+    /**
+     * Método estático que converte uma entidade TransacaoFinanceira
+     * em um TransacaoResponseDTO utilizando o padrão Builder.
+     */
     public static TransacaoResponseDTO fromEntity(TransacaoFinanceira transacao) {
         return TransacaoResponseDTO.builder()
                 .id(transacao.getId())

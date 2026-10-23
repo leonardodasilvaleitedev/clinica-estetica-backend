@@ -17,10 +17,15 @@ public class FuncionarioService {
 
     private final FuncionarioRepository repository;
 
+    // Injeção de dependência do repositório de funcionários via construtor
     public FuncionarioService(FuncionarioRepository repository) {
         this.repository = repository;
     }
 
+    /**
+     * Cadastra um novo funcionário utilizando o padrão Builder para instanciar a entidade,
+     * convertendo a String do cargo para o Enum correspondente e retornando o DTO de resposta.
+     */
     @Transactional
     public FuncionarioResponseDTO criar(FuncionarioRequestDTO dto) {
         Funcionario funcionario = Funcionario.builder()
@@ -38,18 +43,30 @@ public class FuncionarioService {
         return new FuncionarioResponseDTO(salvo);
     }
 
+    /**
+     * Lista todos os funcionários cadastrados, convertendo cada entidade
+     * em seu respectivo DTO de resposta através de Streams.
+     */
     public List<FuncionarioResponseDTO> listarTodos() {
         return repository.findAll().stream()
                 .map(FuncionarioResponseDTO::new)
                 .collect(Collectors.toList());
     }
 
+    /**
+     * Busca um funcionário específico pelo ID, lançando uma exceção
+     * caso o registro não seja encontrado no banco de dados.
+     */
     public FuncionarioResponseDTO buscarPorId(Long id) {
         Funcionario funcionario = repository.findById(id)
                 .orElseThrow(() -> new EntityNotFoundException("Funcionário não encontrado com o ID: " + id));
         return new FuncionarioResponseDTO(funcionario);
     }
 
+    /**
+     * Atualiza os dados de um funcionário existente após localizá-lo por ID,
+     * persistindo as alterações e retornando o DTO atualizado.
+     */
     @Transactional
     public FuncionarioResponseDTO atualizar(Long id, FuncionarioRequestDTO dto) {
         Funcionario funcionario = repository.findById(id)
@@ -68,6 +85,10 @@ public class FuncionarioService {
         return new FuncionarioResponseDTO(atualizado);
     }
 
+    /**
+     * Exclui um funcionário do sistema após verificar se o ID existe,
+     * lançando uma exceção caso contrário.
+     */
     @Transactional
     public void deletar(Long id) {
         if (!repository.existsById(id)) {

@@ -22,6 +22,10 @@ public class ClienteController {
         this.clienteService = clienteService;
     }
 
+    /**
+     * Endpoint POST para cadastrar um novo cliente, retornando o status 201 Created
+     * com o cabeçalho Location apontando para o recurso recém-criado.
+     */
     @PostMapping
     public ResponseEntity<ClienteResponseDTO> cadastrar(
             @RequestBody @Valid ClienteRequest dados,
@@ -33,6 +37,9 @@ public class ClienteController {
         return ResponseEntity.created(uri).body(dto);
     }
 
+    /**
+     * Endpoint GET para listar os clientes de forma paginada e ordenada alfabeticamente por nome.
+     */
     @GetMapping
     public ResponseEntity<Page<ClienteResponseDTO>> listar(
             @PageableDefault(size = 10, sort = {"nome"}) Pageable paginacao) {
@@ -41,6 +48,9 @@ public class ClienteController {
         return ResponseEntity.ok(pagina);
     }
 
+    /**
+     * Endpoint GET para consultar os detalhes de um cliente específico através do seu ID.
+     */
     @GetMapping("/{id}")
     public ResponseEntity<ClienteResponseDTO> buscarPorId(@PathVariable Long id) {
         var cliente = clienteService.buscarPorId(id);

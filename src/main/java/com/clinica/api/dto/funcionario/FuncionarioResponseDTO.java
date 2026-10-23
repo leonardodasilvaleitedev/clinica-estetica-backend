@@ -13,6 +13,10 @@ public record FuncionarioResponseDTO(
         BigDecimal percentualComissao,
         Boolean ativo
 ) {
+    /**
+     * Construtor que mapeia os atributos da entidade Funcionario para o DTO,
+     * convertendo o cargo (Enum) em String de forma segura (null-safety).
+     */
     public FuncionarioResponseDTO(Funcionario funcionario) {
         this(
                 funcionario.getId(),

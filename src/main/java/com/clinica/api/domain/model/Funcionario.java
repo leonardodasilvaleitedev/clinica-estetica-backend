@@ -52,8 +52,11 @@ public class Funcionario implements UserDetails {
     @Column(name = "criado_em", insertable = false, updatable = false)
     private LocalDateTime criadoEm;
 
-    // --- Métodos da interface UserDetails do Spring Security ---
 
+    /**
+     * Define as permissões (roles) do funcionário no Spring Security,
+     * convertendo o cargo num formato reconhecido (ex: "ROLE_ADMIN").
+     */
     @Override
     public Collection<? extends GrantedAuthority> getAuthorities() {
         return List.of(new SimpleGrantedAuthority("ROLE_" + cargo.name()));
@@ -64,6 +67,7 @@ public class Funcionario implements UserDetails {
         return this.senha;
     }
 
+    // Utiliza o e-mail como identificador único (username) para autenticação
     @Override
     public String getUsername() {
         return this.email;
@@ -84,6 +88,7 @@ public class Funcionario implements UserDetails {
         return true;
     }
 
+    // Verifica se a conta está ativa com base no atributo "ativo"
     @Override
     public boolean isEnabled() {
         return Boolean.TRUE.equals(this.ativo);
