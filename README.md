@@ -70,8 +70,8 @@ API Backend robusta desenvolvida para a gestão completa de uma clínica de est�
 
 **Clonar o repositório:**
    ```bash
-   git clone https://github.com/leonardodasilvaleitedev/clinica-estetica-api.git
-   cd clinica-estetica-api
+   git clone https://github.com/leonardodasilvaleitedev/clinica-estetica-backend.git
+   cd clinica-estetica-backend
    ```
 
 ✒️ Autor
