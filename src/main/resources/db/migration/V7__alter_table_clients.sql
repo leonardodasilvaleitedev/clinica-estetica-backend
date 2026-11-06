@@ -1,0 +1,3 @@
+ALTER TABLE clients
+    ADD COLUMN medical_notes TEXT,
+    ADD COLUMN active BOOLEAN NOT NULL DEFAULT TRUE;

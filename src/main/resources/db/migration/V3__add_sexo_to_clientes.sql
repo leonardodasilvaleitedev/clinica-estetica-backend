@@ -1,1 +1,0 @@
-ALTER TABLE clientes ADD COLUMN sexo VARCHAR(20);

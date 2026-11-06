@@ -1,0 +1,1 @@
+-- Column notes Text already defined in V1__init.sql

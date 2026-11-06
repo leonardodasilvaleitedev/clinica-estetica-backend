@@ -1,6 +1,6 @@
 package com.clinica.api.config.security;
 
-import com.clinica.api.repository.FuncionarioRepository;
+import com.clinica.api.repository.EmployeeRepository;
 import jakarta.servlet.FilterChain;
 import jakarta.servlet.ServletException;
 import jakarta.servlet.http.HttpServletRequest;
@@ -21,12 +21,12 @@ import java.io.IOException;
 public class JwtAuthenticationFilter extends OncePerRequestFilter {
 
     private final JwtTokenService tokenService;
-    private final FuncionarioRepository funcionarioRepository;
+    private final EmployeeRepository employeeRepository;
 
     // Injeção de dependências via construtor dos serviços de token e repositório de funcionários
-    public JwtAuthenticationFilter(JwtTokenService tokenService, FuncionarioRepository funcionarioRepository) {
+    public JwtAuthenticationFilter(JwtTokenService tokenService, EmployeeRepository employeeRepository) {
         this.tokenService = tokenService;
-        this.funcionarioRepository = funcionarioRepository;
+        this.employeeRepository = employeeRepository;
     }
 
     /**
@@ -36,7 +36,7 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
     @Override
     protected boolean shouldNotFilter(HttpServletRequest request) throws ServletException {
         String path = request.getRequestURI();
-        return path.startsWith("/api/auth/") || (path.equals("/api/funcionarios") && request.getMethod().equalsIgnoreCase("POST"));
+        return path.startsWith("/api/auth/") || (path.equals("/api/employees") && request.getMethod().equalsIgnoreCase("POST"));
     }
 
     /**
@@ -47,16 +47,16 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
                                     HttpServletResponse response,
                                     FilterChain filterChain) throws ServletException, IOException {
 
-        var tokenJwt = recuperarToken(request);
+        var jwtToken = recoverToken(request);
 
-        if (tokenJwt != null) {
+        if (jwtToken != null) {
             try {
-                var subject = tokenService.getSubject(tokenJwt);
-                var funcionario = funcionarioRepository.findByEmail(subject).orElse(null);
+                var subject = tokenService.getSubject(jwtToken);
+                var employee = employeeRepository.findByEmail(subject).orElse(null);
 
-                if (funcionario != null) {
+                if (employee != null) {
                     var authentication = new UsernamePasswordAuthenticationToken(
-                            funcionario, null, funcionario.getAuthorities());
+                            employee, null, employee.getAuthorities());
                     SecurityContextHolder.getContext().setAuthentication(authentication);
                 }
             } catch (Exception e) {
@@ -71,7 +71,7 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
      * Método auxiliar privado para ler o cabeçalho HTTP "Authorization"
      * e remover o prefixo "Bearer " para isolar apenas o código do token JWT.
      */
-    private String recuperarToken(HttpServletRequest request) {
+    private String recoverToken(HttpServletRequest request) {
         var authorizationHeader = request.getHeader("Authorization");
         if (authorizationHeader != null && authorizationHeader.startsWith("Bearer ")) {
             return authorizationHeader.replace("Bearer ", "").trim();
