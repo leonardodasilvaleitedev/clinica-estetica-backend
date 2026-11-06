@@ -1,0 +1,1 @@
+-- Column base_price already defined in V1__init.sql

@@ -1,6 +1,6 @@
 package com.clinica.api.config.security;
 
-import com.clinica.api.domain.model.Funcionario;
+import com.clinica.api.domain.entity.Employee;
 import io.jsonwebtoken.Claims;
 import io.jsonwebtoken.Jwts;
 import io.jsonwebtoken.SignatureAlgorithm;
@@ -28,19 +28,19 @@ public class JwtTokenService {
 
     /**
      * Gera o token JWT para o funcionário autenticado, incluindo dados (claims)
-     * como e-mail, id, nome e cargo, com validade de 8 horas.
+     * como e-mail, id, nome e role, com validade de 8 horas.
      */
-    public String gerarToken(Funcionario funcionario) {
-        Date agora = new Date();
-        Date dataExpiracao = new Date(agora.getTime() + expiration);
+    public String generateToken(Employee employee) {
+        Date now = new Date();
+        Date expirationDate = new Date(now.getTime() + expiration);
 
         return Jwts.builder()
-                .setSubject(funcionario.getEmail())
-                .claim("id", funcionario.getId())
-                .claim("nome", funcionario.getNome())
-                .claim("role", funcionario.getCargo().name())
-                .setIssuedAt(agora)
-                .setExpiration(dataExpiracao)
+                .setSubject(employee.getEmail())
+                .claim("id", employee.getId())
+                .claim("name", employee.getName())
+                .claim("role", employee.getRole().name())
+                .setIssuedAt(now)
+                .setExpiration(expirationDate)
                 .signWith(getSigningKey(), SignatureAlgorithm.HS256)
                 .compact();
     }

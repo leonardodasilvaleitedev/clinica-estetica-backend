@@ -1,6 +1,6 @@
 # 💅 Clínica de Estética - API RESTful
 
-API Backend robusta desenvolvida para a gestão completa de uma clínica de estética, cobrindo o gerenciamento de clientes, controle de estoque de produtos e agendamento de serviços.
+API Backend robusta desenvolvida para a gestão completa de uma clínica de estética, cobrindo o gerenciamento de clientes, controle de estoque de produtos e appointment de serviços.
 
 ---
 
@@ -20,7 +20,7 @@ API Backend robusta desenvolvida para a gestão completa de uma clínica de est�
 ### 👤 1. Gestão de Clientes (`/api/clientes`)
 - Cadastro de clientes com validações de dados obrigatórios.
 - Listagem e busca por ID.
-- Registro de observações médicas e histórico do cliente.
+- Registro de observações médicas e histórico do client.
 
 ### 📦 2. Controle de Estoque (`/api/produtos`)
 - Cadastro e atualização de produtos em estoque.
@@ -30,10 +30,10 @@ API Backend robusta desenvolvida para a gestão completa de uma clínica de est�
 - Agendamento de procedimentos estéticos vinculando Cliente, Serviço e Profissional.
 - Regra de negócio para validação de conflitos de horários.
 - **Endpoints:**
-  - `POST /api/agendamentos` — Cria um novo agendamento.
+  - `POST /api/agendamentos` — Cria um novo appointment.
   - `GET /api/agendamentos` — Lista todos os agendamentos registrados.
-  - `GET /api/agendamentos/{id}` — Busca os detalhes de um agendamento específico.
-  - `PATCH /api/agendamentos/{id}/status` — Atualiza o status do agendamento (`PENDENTE`, `CONFIRMADO`, `CANCELADO`, etc.).
+  - `GET /api/agendamentos/{id}` — Busca os detalhes de um appointment específico.
+  - `PATCH /api/agendamentos/{id}/status` — Atualiza o status do appointment (`PENDENTE`, `CONFIRMADO`, `CANCELADO`, etc.).
  
 ### 💰 4. Módulo de Transações Financeiras (`/api/transacoes`)
 * Controlo completo do fluxo de caixa da clínica com registo de Receitas e Despesas.

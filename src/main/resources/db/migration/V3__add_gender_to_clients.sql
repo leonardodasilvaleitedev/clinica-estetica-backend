@@ -1,0 +1,2 @@
+ALTER TABLE clients
+ADD COLUMN gender VARCHAR(20);
